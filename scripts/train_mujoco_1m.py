@@ -78,6 +78,7 @@ if __name__ == "__main__":
     parser.add_argument("--target_noise_scale", type=float, default=0.1)
     parser.add_argument("--noise_scale_lr", type=float, default=7e-3)
     parser.add_argument("--add_state_level_reweighting", default=False, action='store_true')
+    parser.add_argument("--use_flow", default=False, action='store_true')
     args = parser.parse_args()
 
     if args.debug:
@@ -157,7 +158,8 @@ if __name__ == "__main__":
                                           beta_schedule_scale=args.beta_schedule_scale,
                                           initial_alpha=args.init_alpha,
                                           alpha_transformation=args.alpha_transformation,
-                                          initial_log_noise_scale=math.log(args.initial_noise_scale))
+                                          initial_log_noise_scale=math.log(args.initial_noise_scale),
+                                          use_flow=args.use_flow)
         algorithm = DPMDV2(agent, params, lr=args.lr, 
                            alpha_lr=args.alpha_lr, 
                            lr_schedule_end=args.lr_schedule_end,

@@ -29,7 +29,7 @@ class OTFlow:
         return t * x_start + (1 - t) * noise
 
     def weighted_p_loss(self, key: jax.Array, weights: jax.Array, model: FlowModel, t: jax.Array,
-                        x_start: jax.Array):
+                        x_start: jax.Array, negative_weights_regularization: float = 0.0):
         if len(weights.shape) == 1:
             weights = weights.reshape(-1, 1)
         assert t.ndim == 1 and t.shape[0] == x_start.shape[0]
@@ -37,6 +37,8 @@ class OTFlow:
         x_t = jax.vmap(self.q_sample)(t, x_start, noise)
         v_pred = model(t, x_t)
         loss = weights * optax.squared_error(v_pred, (x_start - noise))
+        # if negative_weights_regularization > 0.0:
+        #     loss += negative_weights_regularization * jnp.where(weights < 0, v_pred ** 2, 0)
         return loss.mean()
 
 
